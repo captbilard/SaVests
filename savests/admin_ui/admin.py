@@ -1,18 +1,20 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
-from django.utils.html import format_html
-from django.contrib import messages
-from django.utils.translation import ngettext
 from django.urls import path
+from django.contrib import messages
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
+from django.contrib.auth.models import User
+from django.utils.translation import ngettext
 
 # Register your models here.
 admin.site.site_header = 'SaVests Admin Dashboard'
 
 
-
 class UserAdmin(admin.ModelAdmin):
+    """Extending the Django admin dashboard page to show user metrics,
+        customize action button to the users list page that enables staff
+        to set a user to active or inactive with the click of a button,
+        functionality  that allows staff to send an email to all existing users."""
     list_display = ('username', 'first_name', 'last_name', 'email','is_active', 'is_staff')
     list_filter = ('date_joined','last_login', 'is_active', 'is_staff')
     change_list_template = 'admin/admin_ui/admin_ui_change_list.html'
@@ -27,6 +29,7 @@ class UserAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def send_mail_view(self, request):
+        """View to send mail to all users"""
         users = self.model.objects.all()
         sender = request.POST['sender']
         subject = request.POST['subject']
@@ -39,9 +42,10 @@ class UserAdmin(admin.ModelAdmin):
             recipient,
             fail_silently=False,
         )
+        self.message_user(request, 'Mail sent successfully')
         return HttpResponseRedirect('../')
         
-
+    
     def make_active(self, request, queryset):
         updated = queryset.update(is_active = True)
         self.message_user(request, ngettext(
