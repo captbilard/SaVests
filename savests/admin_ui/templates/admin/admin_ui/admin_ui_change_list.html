@@ -1,0 +1,25 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+    <div>
+        <h3>Send mail to all users</h3>
+        <form action="sendmail/" method="post">
+            {% csrf_token %}
+            <p>
+                <label for="sender">From: </label>
+                <input class="vTextField" type="email" name="sender" id="from">
+            </p>
+            <p>
+                <label for="subject">Subject: </label>
+                <input class="vTextField" type="text" name="subject" id="subject">
+            </p>
+            <label for="message">Message: </label>
+            <textarea name="message" id="message" cols="40" rows="10" class="vTextField"></textarea><br>
+            <!-- <input class="vTextField" type="text" name="message" id="message"><br> -->
+            <button class="button" type="submit">Send Mail</button>
+            
+        </form>
+    </div>
+    <br>
+    {{block.super}}
+{% endblock object-tools %}
